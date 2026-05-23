@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard 1</title>
+    <style>
+        body { background: #1a1a2e; color: #eee; font-family: Arial, sans-serif; margin: 0; }
+        .dashboard { padding: 20px; }
+        .header { background: #16213e; padding: 20px; border-radius: 12px; margin-bottom: 20px; }
+        .header h1 { color: #e94560; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 20px; }
+        .card { background: #16213e; padding: 20px; border-radius: 12px; border-left: 4px solid #e94560; }
+        .card h3 { font-size: 0.9em; color: #a0a0a0; margin-bottom: 8px; }
+        .card .value { font-size: 2em; font-weight: 800; }
+        .chart-container { background: #16213e; padding: 20px; border-radius: 12px; }
+        canvas { width: 100%; max-height: 300px; }
+    </style>
+</head>
+<body>
+    <div class="dashboard">
+        <div class="header"><h1>📊 Dashboard - Project 1</h1></div>
+        <div class="grid">
+            <div class="card"><h3>Foydalanuvchilar</h3><div class="value" id="users">10</div></div>
+            <div class="card"><h3>Buyurtmalar</h3><div class="value" id="orders">25</div></div>
+            <div class="card"><h3>Daromad</h3><div class="value">$100</div></div>
+            <div class="card"><h3>O'sish</h3><div class="value">+1%</div></div>
+        </div>
+        <div class="chart-container"><canvas id="chart"></canvas></div>
+    </div>
+    <script>
+        // Dashboard JS Engine
+        class Dashboard {
+            constructor() {
+                this.data = [];
+                this.init();
+            }
+            init() {
+                for (let i = 0; i < 12; i++) {
+                    this.data.push(Math.floor(Math.random() * 100));
+                }
+                this.renderChart();
+                this.animateValues();
+            }
+            renderChart() {
+                const canvas = document.getElementById('chart');
+                const ctx = canvas.getContext('2d');
+                canvas.width = canvas.offsetWidth;
+                canvas.height = 300;
+                const max = Math.max(...this.data);
+                const barWidth = canvas.width / this.data.length - 10;
+                this.data.forEach((val, i) => {
+                    const h = (val / max) * 250;
+                    ctx.fillStyle = '#e94560';
+                    ctx.fillRect(i * (barWidth + 10) + 5, 280 - h, barWidth, h);
+                    ctx.fillStyle = '#eee';
+                    ctx.font = '12px Arial';
+                    ctx.fillText(val, i * (barWidth + 10) + 10, 270 - h);
+                });
+            }
+            animateValues() {
+                document.querySelectorAll('.value').forEach(el => {
+                    let current = 0;
+                    const target = parseInt(el.textContent.replace(/[^0-9]/g, ''));
+                    const step = target / 50;
+                    const interval = setInterval(() => {
+                        current += step;
+                        if (current >= target) { current = target; clearInterval(interval); }
+                        el.textContent = el.textContent.includes('$') ? '$' + Math.floor(current) : Math.floor(current);
+                    }, 30);
+                });
+            }
+        }
+        new Dashboard();
+    </script>
+</body>
+</html>
